@@ -60,6 +60,21 @@ public static class BuildGameMenus
         Debug.Log("Built and saved the main menu and all three in-game menus.");
     }
 
+    [MenuItem("Tools/Add Main Menu Credit")]
+    public static void AddMainMenuCredit()
+    {
+        if (EditorApplication.isPlaying)
+            return;
+
+        Scene scene = EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Single);
+        GameObject canvas = GameObject.Find("Game Menu Canvas");
+        if (canvas == null)
+            throw new InvalidOperationException("MainMenu Canvas is missing.");
+        AddCredit(canvas.transform);
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+    }
+
     private static Canvas CreateCanvas()
     {
         GameObject go = new GameObject("Game Menu Canvas", typeof(RectTransform), typeof(Canvas),
@@ -135,6 +150,23 @@ public static class BuildGameMenus
         AddButton(root, "Fly Like a Bird", new Vector2(0, -42), new Vector2(540, 62), controller.StartFlying);
         AddButton(root, "I'm a Sumo and a Ball", new Vector2(0, -119), new Vector2(540, 62), controller.StartSumoBall);
         AddButton(root, "Exit", new Vector2(0, -209), new Vector2(540, 58), controller.ExitGame);
+
+        AddCredit(root);
+    }
+
+    private static void AddCredit(Transform root)
+    {
+        if (root.Find("Credit") != null)
+            return;
+
+        Text credit = Text(root, "Credit", "By Nyan Myo Sett", new Vector2(-32, 24),
+            new Vector2(420, 36), 18, new Color(0.76f, 0.88f, 0.92f));
+        RectTransform creditRect = credit.rectTransform;
+        creditRect.anchorMin = new Vector2(1, 0);
+        creditRect.anchorMax = new Vector2(1, 0);
+        creditRect.pivot = new Vector2(1, 0);
+        creditRect.anchoredPosition = new Vector2(-32, 24);
+        credit.alignment = TextAnchor.LowerRight;
     }
 
     private static void BuildPauseMenu(Transform root, GameMenus controller)
